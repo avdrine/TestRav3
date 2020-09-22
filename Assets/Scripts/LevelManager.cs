@@ -7,7 +7,9 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
 
     [SerializeField] private BackPackController _playerBackPack;
+    [SerializeField] private bool _dragItem = false;
 
+    public bool IsDragItem { get => _dragItem; }
 
     private void Awake()
     {
@@ -22,5 +24,15 @@ public class LevelManager : MonoBehaviour
     public void OnItemThrowFromBackPack()
     {
 
+    }
+    
+    public void OnStartDragItem()
+    {
+        _dragItem = true;
+    }
+
+    public void OnEndDragItem()
+    {
+        _dragItem = false;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class PhysicalItem : MonoBehaviour
@@ -8,13 +9,25 @@ public class PhysicalItem : MonoBehaviour
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private ItemData _itemData;
     private Camera _mainCamera;
-    bool drag = false;
+    bool _drag = false;
     [SerializeField] private Collider[] colliders;
     public PhysicalItemEvent OnDropToBackPack = new PhysicalItemEvent();
+    public UnityEvent OnStartDragItem = new UnityEvent();
+    public UnityEvent OnEndDragItem = new UnityEvent();
 
     Vector3 targetRotationOnDrag = new Vector3(0, 150, 30);
 
     public ItemData ItemData { get => _itemData; }
+    public bool IsDrag 
+    { 
+        get => _drag;
+        set 
+        { 
+            _drag = value;
+            if (_drag) OnStartDragItem.Invoke();
+            else OnEndDragItem.Invoke();
+        }
+    }
 
     // Start is called before the first frame update
     void Awake()
@@ -24,6 +37,8 @@ public class PhysicalItem : MonoBehaviour
     private void Start()
     {
         OnDropToBackPack.AddListener(LevelManager.Instance.OnItemDropToBackPack);
+        OnStartDragItem.AddListener(LevelManager.Instance.OnStartDragItem);
+        OnEndDragItem.AddListener(LevelManager.Instance.OnEndDragItem);
     }
 
     // Update is called once per frame
@@ -34,7 +49,7 @@ public class PhysicalItem : MonoBehaviour
 
     void OnMouseDown()
     {
-        drag = true;
+        IsDrag = true;
         _rb.isKinematic = true;
         for (int i = 0; i < colliders.Length; i++) colliders[i].gameObject.layer = 2;
 
@@ -42,7 +57,7 @@ public class PhysicalItem : MonoBehaviour
         StartCoroutine(RotateToDrag());
     }
 
-    float _rotateToDragDuration = 0.2f;
+    readonly float _rotateToDragDuration = 0.2f;
     private IEnumerator RotateToDrag()
     {
         Vector3 startEA = transform.eulerAngles;
@@ -61,7 +76,7 @@ public class PhysicalItem : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(drag)
+        if(IsDrag)
         {
             Vector3 currPoint = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 2.5f));
             
@@ -79,8 +94,7 @@ public class PhysicalItem : MonoBehaviour
     void OnMouseUp()
     {
 
-        drag = false;
-        //_rb.useGravity = true;
+        IsDrag = false;
         _rb.isKinematic = false;
         if (IsRaycastHitBackPack) { OnDropToBackPack.Invoke(this); }
         for (int i = 0; i < colliders.Length; i++) colliders[i].gameObject.layer = 0;
@@ -102,6 +116,7 @@ public class PhysicalItem : MonoBehaviour
         }
     }
 
+
     public void MoveToInventory(Transform pointToEquip)
     {
         if(_moveToInventory_c == null)
@@ -112,7 +127,7 @@ public class PhysicalItem : MonoBehaviour
         }
     }
 
-    float _moveToInventorygDuration = 0.2f;
+    readonly float _moveToInventorygDuration = 0.2f;
     private IEnumerator _moveToInventory_c;
     private IEnumerator MoveToInventory_c(Transform pointToEquip)
     {
@@ -136,6 +151,8 @@ public class PhysicalItem : MonoBehaviour
     private void OnDestroy()
     {
         OnDropToBackPack.RemoveAllListeners();
+        OnStartDragItem.RemoveAllListeners();
+        OnEndDragItem.RemoveAllListeners();
     }
 
     private void DisableToTake()

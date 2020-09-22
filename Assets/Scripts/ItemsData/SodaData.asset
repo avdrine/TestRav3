@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 2
   _name: Soda
-  _icon: {fileID: 0}
+  _icon: {fileID: 21300000, guid: 598250e6205f2754a99149ff700b3946, type: 3}
   _type: 2
   _weight: 0
