@@ -4,12 +4,43 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    /// <summary>
+    /// Singleton
+    /// </summary>
     public static LevelManager Instance;
 
+    /// <summary>
+    /// Контроллер рюкзака игрока
+    /// </summary>
     [SerializeField] private BackPackController _playerBackPack;
-    [SerializeField] private bool _dragItem = false;
+    
+    /// <summary>
+    /// Событие при успешном "одевании" предмета на рюкзак
+    /// </summary>
+    [SerializeField] private PhysicalItemEvent _equipEvent = new PhysicalItemEvent();
+
+    /// <summary>
+    /// Событие при успешном снятии предмета с рюкзака 
+    /// </summary>
+    [SerializeField] private PhysicalItemEvent _unequipEvent = new PhysicalItemEvent();
+
+    /// <summary>
+    /// Флаг состояния перетаскивания предметов
+    /// </summary>
+    private bool _dragItem = false;
 
     public bool IsDragItem { get => _dragItem; }
+
+    /// <summary>
+    /// Событие при успешном "одевании" предмета на рюкзак
+    /// </summary>
+    public PhysicalItemEvent EquipEvent { get => _equipEvent;  }
+
+    /// <summary>
+    /// Событие при успешном снятии предмета с рюкзака 
+    /// </summary>
+    public PhysicalItemEvent UnequipEvent { get => _unequipEvent;  }
+
 
     private void Awake()
     {

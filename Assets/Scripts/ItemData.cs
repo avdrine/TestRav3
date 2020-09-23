@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// ScriptableObject для хранения основных характеристик предметов
+/// </summary>
 [CreateAssetMenu(fileName = "New ItemData", menuName = "Item Data", order = 51)]
 public class ItemData : ScriptableObject
 {

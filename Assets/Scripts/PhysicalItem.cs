@@ -34,17 +34,12 @@ public class PhysicalItem : MonoBehaviour
     {
         _mainCamera = Camera.main;
     }
+
     private void Start()
     {
         OnDropToBackPack.AddListener(LevelManager.Instance.OnItemDropToBackPack);
         OnStartDragItem.AddListener(LevelManager.Instance.OnStartDragItem);
         OnEndDragItem.AddListener(LevelManager.Instance.OnEndDragItem);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void OnMouseDown()
