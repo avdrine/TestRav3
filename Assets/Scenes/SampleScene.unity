@@ -1403,7 +1403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8d714d21b50b2141b62441c3ff95afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useNet: 0
+  useNet: 1
   _serverURL: https://dev3r02.elysium.today/inventory/status
   _authorizationKey: BMeHG5xqJeB4qCjpuJCTQLsqNGaqkfB6
 --- !u!1 &554917824
