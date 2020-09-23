@@ -7,19 +7,58 @@ using UnityEngine;
 /// </summary>
 public class BackPackController : MonoBehaviour
 {
+    #region Переменные
+
+    /// <summary>
+    /// Одетый предмет класса "маленькое ружье" (nullable)
+    /// </summary>
     private PhysicalItem _equippedSmallRiffle;
+    /// <summary>
+    /// Одетый предмет класса "оружие ближнего боя" (nullable)
+    /// </summary>
     private PhysicalItem _equippedMeleeWeapon;
+    /// <summary>
+    /// Одетый предмет класса "маленький предмет" (nullable)
+    /// </summary>
     private PhysicalItem _equippedSmallItem;
-    
+
+    /// <summary>
+    /// Место для одетого объекта на рюкзаке класса "маленькое ружье"
+    /// </summary>
     [SerializeField] private Transform _pointToEquippedSmallRiffle;
+
+    /// <summary>
+    /// Место для одетого объекта на рюкзаке класса "оружие ближнего боя"
+    /// </summary>
     [SerializeField] private Transform _pointToEquippedMeleeWeapon;
+
+    /// <summary>
+    /// Место для одетого объекта на рюкзаке класса "маленький предмет"
+    /// </summary>
     [SerializeField] private Transform _pointToEquippedSmallItem;
 
+    /// <summary>
+    /// UI для инвентаря
+    /// </summary>
     [SerializeField] private GameObject _backPackUI;
+
+    /// <summary>
+    /// Ячейки инвентаря
+    /// </summary>
     [SerializeField] private List<InventoryCell> _inventoryCells = new List<InventoryCell>();
 
+    /// <summary>
+    /// Флаг нахождения мышки на ячейке инвентаря
+    /// </summary>
     private bool _mouseOnCell = false;
 
+    #endregion
+
+    #region Свойства
+
+    /// <summary>
+    /// Флаг отсутствия свободного места в инвентаре
+    /// </summary>
     private bool IsInventoryFull { 
         get 
         {
@@ -31,6 +70,10 @@ public class BackPackController : MonoBehaviour
         } 
     }
 
+    #endregion
+
+    #region Функции
+
     void Start()
     {
         InitilizeInventoryGUI();
@@ -38,6 +81,7 @@ public class BackPackController : MonoBehaviour
 
     void Update()
     {
+        //Если интерфейс рюкзака активен, была отпущена мышь и при этом мышь не наведена на ячейку инвентаря - закрыть UI
         if (_backPackUI.activeSelf && Input.GetKeyUp(KeyCode.Mouse0) && !_mouseOnCell)
             CloseBackPackUI();
     }
@@ -50,12 +94,19 @@ public class BackPackController : MonoBehaviour
     {
         _mouseOnCell = false;
     }
+
+    /// <summary>
+    /// Закрыть UI рюкзака
+    /// </summary>
     public void CloseBackPackUI()
     {
         _backPackUI.SetActive(false);
         _mouseOnCell = false;
     }
 
+    /// <summary>
+    /// Инициализация UI рюкзака
+    /// </summary>
     private void InitilizeInventoryGUI()
     {
         TryAddItemToCells(_equippedSmallRiffle);
@@ -73,6 +124,10 @@ public class BackPackController : MonoBehaviour
         _backPackUI.SetActive(false);
     }
 
+    /// <summary>
+    /// Попробовать поместить предмет в инвентарь (Проверяет свободные ячейки в инвентаре)
+    /// </summary>
+    /// <param name="item">Перемещаемый предмет</param>
     private void TryAddItemToCells(PhysicalItem item)
     {
         if (item != null && item.ItemData != null && !IsInventoryFull)
@@ -88,19 +143,26 @@ public class BackPackController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Выкинуть предмет из инвентаря
+    /// </summary>
+    /// <param name="item">Выкидываемый предмет</param>
     private void DropItem(PhysicalItem item)
     {
         bool operationSuccess = false;
-        if (_equippedSmallRiffle == item) { _equippedSmallRiffle = null; item.Unequip();  }
-        else if (_equippedMeleeWeapon == item) { _equippedMeleeWeapon = null; item.Unequip();  }
-        else if (_equippedSmallItem == item) { _equippedSmallItem = null; item.Unequip();  }
+        if (_equippedSmallRiffle == item) { _equippedSmallRiffle = null; item.Unequip(); operationSuccess = true;  }
+        else if (_equippedMeleeWeapon == item) { _equippedMeleeWeapon = null; item.Unequip(); operationSuccess = true; }
+        else if (_equippedSmallItem == item) { _equippedSmallItem = null; item.Unequip(); operationSuccess = true; }
         CloseBackPackUI();
 
         if (operationSuccess) LevelManager.Instance.UnequipEvent.Invoke(item);
     }
 
 
-
+    /// <summary>
+    /// Попробовать одеть предмет на рюкзак
+    /// </summary>
+    /// <param name="item"></param>
     public void TryEquipItem(PhysicalItem item)
     {
         bool operationSuccess = false;
@@ -159,4 +221,5 @@ public class BackPackController : MonoBehaviour
         }
     }
 
+    #endregion
 }
