@@ -76,16 +76,19 @@ public class NetManager : MonoBehaviour
     {
         if(useNet)
         {
-            WWWForm data = new WWWForm();
-            data.AddField("auth", "\"" + _authorizationKey + "\"");
-            data.AddField("messageType", messageType);
+            //Dictionary<string, string> headers = new Dictionary<string, string>();
+            //headers.Add("Authorization", "Basic " + Base64Encode("auth:" + _authorizationKey));
 
+            WWWForm data = new WWWForm();
+            //data.AddField("Authorization", "Basic " + Base64Encode("auth:"+ _authorizationKey));
+            data.AddField("messageType", messageType);
             foreach (var curr in keyValues)
             {
                 data.AddField(curr.Key, curr.Value);
             }
 
             UnityWebRequest www = UnityWebRequest.Post(_serverURL, data);
+            www.SetRequestHeader("Authorization", /*"Basic " + Base64Encode(*/"auth: " + _authorizationKey)/*)*/;
             yield return www.SendWebRequest();
 
             if (www.isNetworkError || www.isHttpError)
@@ -98,6 +101,12 @@ public class NetManager : MonoBehaviour
             }
         }
         
+    }
+
+    public static string Base64Encode(string plainText)
+    {
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        return System.Convert.ToBase64String(plainTextBytes);
     }
 
     #endregion
