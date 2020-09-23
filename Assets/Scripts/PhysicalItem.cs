@@ -148,6 +148,12 @@ public class PhysicalItem : MonoBehaviour
         _moveToInventory_c = null;
     }
 
+    public void Unequip()
+    {
+        EnableToTake();
+        _rb.AddForce((Vector3.up - (transform.position - _mainCamera.transform.position).normalized) * 2f, ForceMode.Impulse);
+    }
+
     private void OnDestroy()
     {
         OnDropToBackPack.RemoveAllListeners();

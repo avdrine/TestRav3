@@ -15,6 +15,8 @@ public class BackPackController : MonoBehaviour
     [SerializeField] private GameObject _backPackUI;
     [SerializeField] private List<InventoryCell> _inventoryCells = new List<InventoryCell>();
 
+    private bool _mouseOnCell = false;
+
     private bool IsInventoryFull { 
         get 
         {
@@ -36,10 +38,24 @@ public class BackPackController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(_backPackUI.activeSelf && Input.GetKeyUp(KeyCode.Mouse0))
-            _backPackUI.SetActive(false);
+        if (_backPackUI.activeSelf && Input.GetKeyUp(KeyCode.Mouse0) && !_mouseOnCell)
+            CloseBackPackUI();
     }
-    
+
+    public void MouseEnterCell()
+    {
+        _mouseOnCell = true;
+    }
+    public void MouseExitCell()
+    {
+        _mouseOnCell = false;
+    }
+    public void CloseBackPackUI()
+    {
+        _backPackUI.SetActive(false);
+        _mouseOnCell = false;
+    }
+
     private void InitilizeInventoryGUI()
     {
         TryAddItemToCells(_equippedSmallRiffle);
@@ -48,6 +64,10 @@ public class BackPackController : MonoBehaviour
         for (int i = 0; i < _inventoryCells.Count; i++)
         {
             if (_inventoryCells[i].Item == null) _inventoryCells[i].Item = null;
+
+            _inventoryCells[i].DropEvent.AddListener(DropItem);
+            _inventoryCells[i].PointerEnter.AddListener(MouseEnterCell);
+            _inventoryCells[i].PointerExit.AddListener(MouseExitCell);
         }
 
         _backPackUI.SetActive(false);
@@ -61,11 +81,19 @@ public class BackPackController : MonoBehaviour
             {
                 if (_inventoryCells[i].Item == null)
                 {
-                    _inventoryCells[i].Item = item.ItemData; 
+                    _inventoryCells[i].Item = item; 
                     break;
                 }
             }
         }
+    }
+
+    private void DropItem(PhysicalItem item)
+    {
+        if (_equippedSmallRiffle == item) { _equippedSmallRiffle = null; item.Unequip();  }
+        else if (_equippedMeleeWeapon == item) { _equippedMeleeWeapon = null; item.Unequip();  }
+        else if (_equippedSmallItem == item) { _equippedSmallItem = null; item.Unequip();  }
+        CloseBackPackUI();
     }
 
 
